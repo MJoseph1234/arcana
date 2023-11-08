@@ -148,4 +148,5 @@ dmypy.json
 /markdown
 /.env
 *.sublime-project
+*.sublime-workspace
 /arcana-check
