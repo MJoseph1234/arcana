@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>{{ page_title }}</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+	<script src="https://code.jquery.com/jquery-migrate-1.4.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js" integrity="sha512-MmdBVZj8VMd7kbchsQ1w3BiRpmk5SpL4AdsnskA2IQEkEoV/2hQnb4NpCaq3BILglhK95AqT818/Yl9HtJ0eew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="theme.js"></script>
+	<link rel="stylesheet" href="styles.css">
+	<script>
+		$(function() {
+			//Calls the tocify method on your HTML div.
+			$("#toc").tocify({context: "#content", scrollTo: 50});
+		});
+	</script>
+</head>
+<body>
+	{% navbar %}
+	<div id="toc"></div>
+	<div id="content">
+		{{ content }}
+	</div>
+</body>
+</html>
