@@ -10,6 +10,3 @@ MARKDOWN = os.path.join(BASE, 'markdown')
 STATIC = os.path.join(BASE, 'static')
 TEMPLATES = os.path.join(BASE, 'templates')
 OUTPUT = os.path.join(BASE, SITE_NAME)
-
-
-
