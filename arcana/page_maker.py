@@ -49,7 +49,6 @@ class MarkdownPage():
 			return(self.meta['link text'][0])
 		else:
 			return(f'{capitalize_words(self.file_name)}')
-	
 
 	@property
 	def content_as_html(self):
@@ -61,7 +60,7 @@ class MarkdownPage():
 	def __str__(self):
 		return(self.md_file)
 
-class SiteGenerator():
+class Site():
 	def __init__(self):
 		self._pages = []
 		self.title_suffix = ' - Arcana Check'
@@ -91,6 +90,10 @@ class SiteGenerator():
 		return(self._pages)
 
 	def build_navbar_for_page(self, page):
+		"""
+		The navbar is page-specific (so we can add the 'active' class),
+		but requires details of the entire site
+		"""
 		navbar = []
 		for pg in self.pages:
 			html_class_list = []
@@ -108,8 +111,6 @@ class SiteGenerator():
 
 			html = f'<a href="{pg.file_name}.html"{html_class_str}>{pg.link_text}</a>'
 			navbar.append(html)
-
-		self.navbar = navbar
 		return(navbar)
 
 	def build_site(self):

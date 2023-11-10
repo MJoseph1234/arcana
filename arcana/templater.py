@@ -1,9 +1,9 @@
 """
 Basic templating system allows {{ content }} or {% block %}
 
-{{ content }} 
+{{ content }} expects a variable to be passed in
+{% block %} expects to find a file named 'block' of which to pull in the contents
 """
-
 
 def fill_template(new_page, template_page, **kwargs):
 	with open(template_page, 'r') as template, open(new_page, 'w') as new:
