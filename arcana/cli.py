@@ -11,15 +11,18 @@ def main():
 
 	args = parser.parse_args()
 
+
 	args.func(args)
 
 def build_parser():
 	parser = argparse.ArgumentParser(
 		prog = 'arcana',
-		description = 'static site generator')
+		description = 'Arcana static site generator')
 
-	subparsers = parser.add_subparsers(required = True,
-		help = 'Arcana command to run')
+	subparsers = parser.add_subparsers(title = 'commands',
+		description = 'Arcana commands',
+		required = True,
+		dest = 'command')
 
 	rebuild_parser = subparsers.add_parser('rebuild', 
 		help = 'Rebuild a page or the entire site')

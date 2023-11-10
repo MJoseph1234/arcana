@@ -62,9 +62,9 @@ class MarkdownPage():
 
 class Site():
 	def __init__(self):
-		self._pages = []
-		self.title_suffix = ' - Arcana Check'
+		self.title_suffix = settings.TITLE_SUFFIX
 		self.input_directory = settings.MARKDOWN
+		self.refresh_page_list()
 
 	def exclude_file(self, file):
 		file_name, ext = os.path.splitext(file)
@@ -80,14 +80,16 @@ class Site():
 	def pages(self):
 		if self._pages:
 			return(self._pages)
+		else:
+			return(None)
 
+	def refresh_page_list(self):
+		self._pages = []
 		for file in os.listdir(self.input_directory):
 			if self.exclude_file(file):
 				continue
 
 			self._pages.append(MarkdownPage(file))
-
-		return(self._pages)
 
 	def build_navbar_for_page(self, page):
 		"""
