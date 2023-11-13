@@ -31,8 +31,9 @@ class Autoreloader():
 					continue
 
 				if mtime > old_time:
-					print(f'Updating {page.title} from {page.file}')
+					print(f'Updating {page.title} from {page.file}', end = ' ')
 					self.site.update_single_page(page)
+					print(f'... Done')
 
 			time.sleep(self.SLEEP_TIME)
 			yield
