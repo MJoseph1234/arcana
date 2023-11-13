@@ -55,6 +55,16 @@ function randomInt(min, max) {
 	return Math.floor(Math.random() * (max-min+1) + min)
 }
 
-window.onload = function() { 
-	findRolls();
+if (typeof window.onload == 'function') {
+	var oldonload = window.onload
+	window.onload = function() {
+		oldonload();
+		findRolls();
+	}
+} else {
+	window.onload == findRolls;
 }
+
+// window.onload = function() { 
+// 	findRolls();
+// }
