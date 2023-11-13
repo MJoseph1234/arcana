@@ -20,7 +20,7 @@ function addSpanToRollText(match, p1, p2, p3, p4, p5, offset, string) {
 	operator = (typeof p4 === 'undefined') ? '+': p4
 	modifier = (typeof p5 === 'undefined') ? '0': p5
 
-	return('<span class="roll" onclick="runRoll(\''+count+'\', \''+sides+'\', \''+operator+'\', \''+modifier+'\')">'+match+'</span>')
+	return('<span class="roll" style="cursor: pointer;" onclick="runRoll(\''+count+'\', \''+sides+'\', \''+operator+'\', \''+modifier+'\')">'+match+'</span>')
 }
 
 function runRoll(count, sides, operator, modifier) {
