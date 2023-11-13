@@ -32,7 +32,6 @@ let currentThemeSetting = getThemeAsString({ localStorageTheme, systemSettingDar
 document.documentElement.setAttribute('data-theme', currentThemeSetting)
 
 window.onload = function(){
-	console.log('done loading');
 	setColorTheme(currentThemeSetting);
 	document.getElementById('theme-toggle').addEventListener('click', switchColorMode);
 };

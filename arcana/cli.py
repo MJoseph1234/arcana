@@ -31,6 +31,9 @@ def build_parser():
 	rebuild_parser.add_argument('--all',
 		help = 'Rebuild the entire site',
 		action = 'store_true')
+	rebuild_parser.add_argument('-s', '--static',
+		help = 'Update only static files',
+		action = 'store_true')
 	rebuild_parser.set_defaults(func=rebuild)
 
 	formatter_parser = subparsers.add_parser('format',
@@ -59,6 +62,9 @@ def rebuild(args):
 		for page in gen.pages:
 			if pagename in {page.file_name, page.file}:
 				gen.update_single_page(page)
+
+	if args.static:
+		page_maker.Site().add_static_files()
 
 def do_format(args):
 	base = settings.BASE

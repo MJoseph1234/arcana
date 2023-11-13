@@ -126,6 +126,9 @@ class Site():
 				navbar_links = self.build_navbar_for_page(page),
 				content = page.content_as_html)
 
+		self.add_static_files()
+
+	def add_static_files(self):
 		for file in os.listdir(settings.STATIC):
 			shutil.copy(os.path.join(settings.STATIC, file), settings.OUTPUT)
 
