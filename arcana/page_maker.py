@@ -45,8 +45,8 @@ class MarkdownPage():
 
 	@property
 	def link_text(self):
-		if self.meta.get('link text'):
-			return(self.meta['link text'][0])
+		if self.meta.get('linktext'):
+			return(self.meta['linktext'][0])
 		else:
 			return(f'{capitalize_words(self.file_name)}')
 
@@ -108,7 +108,7 @@ class Site():
 				html_class_list.append('split')
 
 			if html_class_list:
-				x = ', '.join(html_class_list)
+				x = ' '.join(html_class_list)
 				html_class_str = f' class="{x}"'
 
 			html = f'<a href="{pg.file_name}.html"{html_class_str}>{pg.link_text}</a>'

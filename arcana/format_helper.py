@@ -8,13 +8,14 @@ from the books. Each thing still needs manual review
 import settings
 
 def main(infile, outfile):
+	title = 0
 	with open(infile, 'r') as in_file, open(outfile, 'w') as out_file:
 		for line, text in enumerate(in_file):
 			text = text.strip()
 			if text == '':
 				continue
 
-			if text.isupper() and "|" not in text:
+			if text.isupper() and "|" not in text and '#' not in text:
 				out_file.write(f'\n## {capitalize_words(text)}\n')
 				title = line
 				table = 0
@@ -37,9 +38,9 @@ def main(infile, outfile):
 					table = 1
 			else:
 				try:
-					if '.' in text and text.split('.')[0].count(' ') == 1:
-						text = f'**{text.split(".")[0]}.** {text.split(".", 1)[1]}'
 					text = check_common_replacements(text)
+					if '.' in text and text.split('.')[0].count(' ') <= 2:
+						text = f'**{text.split(".")[0]}.** {text.split(".", 1)[1]}'
 					out_file.write(f'\n{text}\n')
 
 					table = 0
@@ -49,12 +50,26 @@ def main(infile, outfile):
 
 
 def check_common_replacements(text):
+	if text.startswith('- '):
+		text = ' - ' + text[2:]
 	text = text.replace(' , ', ', ')
 	text = text.replace('dlOO', 'd100')
 	text = text.replace('dlO', 'd10')
+	text = text.replace('ld3', '1d3')
+	text = text.replace('ld6', '1d6')
+	text = text.replace('ld8', '1d8')
 	text = text.replace('­ ', '')
 	text = text.replace('+l', '+1')
 	text = text.replace('• ', ' - ')
+	text = text.replace(' ifyou', ' if you')
+	text = text.replace('Ifyou', 'If you')
+	text = text.replace('speJJ', 'spell')
+	text = text.replace('SpeJJ', 'Spell')
+	text = text.replace(' ofthe ', ' of the')
+	text = text.replace(' ofyou', ' of you')
+	text = text.replace(' ofjewel', ' of jewel')
+	text = text.replace(' offorce', ' of force')
+	text = text.replace(' ofdeath', ' of death')
 	return(text)
 
 def capitalize_words(string):
