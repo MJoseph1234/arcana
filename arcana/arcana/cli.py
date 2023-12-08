@@ -1,16 +1,36 @@
+"""
+This should be depricated
+	need to move Serve command
+	need to move extract commands to arcana-check's project specific commands
+"""
+
 import argparse
 import os
+from pathlib import Path
 
 import page_maker
 import format_helper
-import settings
+from settings import ProjectSettings
 from autoreload import Autoreloader
+from server import run_webserver
+import commands
 
 def main():
 	parser = build_parser()
 
 	args = parser.parse_args()
 
+	if args.directory == '.':
+		args.directory = Path.cwd()
+	elif not Path(args.directory).is_dir():
+		return
+	else:
+		if not Path(args.directory).is_absolute():
+			args.directory = Path.cwd().joinpath(args.directory)
+		else:
+			args.directory = Path(args.directory)
+
+	s = ProjectSettings(directory = args.directory)
 
 	args.func(args)
 
@@ -18,6 +38,11 @@ def build_parser():
 	parser = argparse.ArgumentParser(
 		prog = 'arcana',
 		description = 'Arcana static site generator')
+
+	parser.add_argument('directory',
+		nargs = '?',
+		default = '.',
+		help = 'directory in which to run Arcana')
 
 	subparsers = parser.add_subparsers(title = 'commands',
 		description = 'Arcana commands',
@@ -48,8 +73,12 @@ def build_parser():
 		help = 'Watch markdown pages for updates and regenerate HTML as needed')
 	monitor_parser.set_defaults(func=run_autoreload)
 
+	server_parser = subparsers.add_parser('serve',
+		help = 'Watch markdown pages for updates and regenerate HTML as needed')
+	server_parser.set_defaults(func=serve)
 
 	return(parser)
+
 
 def rebuild(args):
 	if args.all:
@@ -67,7 +96,7 @@ def rebuild(args):
 		page_maker.Site().add_static_files()
 
 def do_format(args):
-	base = settings.BASE
+	base = settings.root
 	in_file = os.path.join(base, 'old_stuff', args.infile)
 	out_file = os.path.join(base, 'old_stuff', args.outfile)
 	format_helper.main(in_file, out_file)
@@ -77,6 +106,12 @@ def run_autoreload(args):
 	print(f'Monitoring files in {x.site.input_directory}')
 	print('Press CTRL+C to exit')
 	x.run()
+
+def serve(args):
+	s = ProjectSettings(directory = args.directory)
+	path = Path(s.root).joinpath(s.public)
+	print(path)
+	run_webserver(path)
 
 if __name__ == '__main__':
 	main()

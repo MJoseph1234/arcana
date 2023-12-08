@@ -1,0 +1,23 @@
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcana"
+version = "0.0.1"
+requires-python = ">= 3.11"
+dependencies = [
+	"markdown >= 3.5"
+]
+authors = [
+	{name = "Michael Joseph", email = "josco.michael@gmail.com"}
+]
+description = "Arcana static site generator"
+readme = "README.md"
+
+# executables based on this:
+# https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
+
+[project.scripts]
+arcana = "arcana.management:main"

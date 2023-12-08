@@ -7,7 +7,7 @@ import json
 
 def main(file):
 	current_chunk = []
-	with open(file) as in_file:
+	with open(file, 'r') as in_file:
 		for line, text in enumerate(in_file):
 
 			if text.startswith('# '):
@@ -21,7 +21,7 @@ def main(file):
 				current_chunk = [text.strip()]
 				continue
 
-			current_chunk.append(text.strip())
+			current_chunk.append(text)
 
 
 def process_chunk(chunk):
@@ -39,12 +39,40 @@ def process_feat(chunk):
 
 	assert(chunk[-1].strip() == '')
 	chunk.pop()
-	match = re.fullmatch('^(Tasha\'s Cauldron of Everything|Player\'s Handbook) pg. ([0-9]+)', chunk.pop())
+	match = re.fullmatch('^(Tasha\'s Cauldron of Everything|Player\'s Handbook) pg. ([0-9]+)', chunk.pop().strip())
 	assert(match)
 	page = match.group(2)
 	book = match.group(1)
 
-	description = [line.strip() for line in chunk if line.strip() != '']
+	description = [line.rstrip() for line in chunk if line.strip() != '']
+
+	feat = {'title': title,
+		'description': description,
+		'book': book,
+		'page': page}
+
+	if prereq:
+		feat['prerequisite'] = prereq
+	
+	print(json.dumps(feat, sort_keys=True, indent = 4))
+
+def process_magic_item(chunk):
+	assert(chunk[0].startswith('##'))
+	title = chunk.pop(0).replace('## ', '').strip()
+
+	line2 = re.match('^\*(Wondrous item|Armor( \(\w\,\.\d\))?|Weapon ( \(\w\,\.\d\))?)\, ((common|uncommon|rare|very rare|legendary)( \d\+\(\)\w)*)(, \(requires attunement(\w \d\,\.)*\))\*', chunk[0])
+	if line2:
+		line2 = line2.group(1)
+		chunk.pop(0)
+
+	assert(chunk[-1].strip() == '')
+	chunk.pop()
+	match = re.fullmatch('^(Tasha\'s Cauldron of Everything|Player\'s Handbook) pg. ([0-9]+)', chunk.pop().strip())
+	assert(match)
+	page = match.group(2)
+	book = match.group(1)
+
+	description = [line.rstrip() for line in chunk if line.strip() != '']
 
 	feat = {'title': title,
 		'description': description,

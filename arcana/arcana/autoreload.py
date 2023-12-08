@@ -1,13 +1,13 @@
 import time
 import os
 
-from page_maker import Site
+from .page_maker import Site
 
 class Autoreloader():
 	SLEEP_TIME = 1
 
-	def __init__(self):
-		self.site = Site()
+	def __init__(self, settings):
+		self.site = Site(settings)
 
 	def run(self):
 		ticker = self.tick()

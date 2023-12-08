@@ -54,7 +54,7 @@ def handle_block(text, new, **kwargs):
 	if kwargs.get('indent'):
 		indent += kwargs['indent']
 
-	with open('templates/' + variable + '.html', 'r') as block:
+	with open('layouts/' + variable + '.html', 'r') as block:
 		for count, text in enumerate(block):
 
 			if "{{" in text:
