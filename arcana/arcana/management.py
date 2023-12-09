@@ -95,6 +95,8 @@ class BaseCommand():
 			name = self.command_name,
 			help = self.command_help)
 
+		self.print_help = subparser.print_help
+
 		self.add_arguments(subparser)
 
 		subparser.set_defaults(command = self)

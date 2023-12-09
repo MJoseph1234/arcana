@@ -40,5 +40,6 @@ class Command(BaseCommand):
 
 		else:
 			print('no file or site specified. Doing Nothing.')
+			self.print_help()
 
 

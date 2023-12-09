@@ -13,19 +13,10 @@ This started as a simple web app like [[http://ceryliae.github.io/5edmscreen/ind
  - [x] use settings.py directories
  - [ ] enable customizing themes
  - [ ] site-specific extensions/markdown parsers
-    - [ ] improve the markdown parser/webpage builder
-    	- [ ] each entry could be a div, which will make it easier to Favorite things later on
-    	- [ ] parser generates entire site (with TOC), removing javascript dependencies on jquery and tocify.js
-    		- this will mean quicker loading, since we won't have tocify.js generating DOM on the fly each time it loads
-         - I think this can be done with a custom extension to the Python-Markdown library. 
-         - See the [[https://github.com/aleray/mdx_outline|outline]] extension for how to wrap secitons in \<div\>s 
-         - then we need a part to store each header/subheader
-         - then a way to pass back the nested list of header/subheaders (see the meta extension for an example of getting this)
  - [x] markdown metadata extension to customize pages (like getting About page right aligned)
  - [ ] refactor the templater code so it uses settings
  	- [ ] can pull files from {% static block %} using settings.static
  - [x] refactor SiteGenerator so that it's more like a class representing Site, with a generate function. 
-
  - [ ] autoreloader to automatically update HTML files if markdown files are updated. 
    - [x] monitor for changes in existing md files
    - [ ] monitor for added or removed markdown files
@@ -33,7 +24,8 @@ This started as a simple web app like [[http://ceryliae.github.io/5edmscreen/ind
  - [x] separate and modularize cli commands
    - [x] core commands
    - [x] site-specific commands
- - [ ] commands need a way to fall back on argparse's help text printer if our custom run command finds an issue with the arguments.
+ - [x] commands need a way to fall back on argparse's help text printer if our custom run command finds an issue with the arguments.
+ - [ ] extend build command with controls for including/excluding drafts/future pages/expired pages
 
 
 # arcana-check.net
@@ -62,6 +54,14 @@ a site, built using the Arcana static site generator, to display long pages of d
  - [ ] TOC start all collapsed
  - [ ] really long TOC should scroll with user, always showing currently active header
  - [ ] marking things as Favorite, which adds them to a Favorites page
+ - [ ] improve the markdown parser/webpage builder
+    - [ ] each entry could be a div, which will make it easier to Favorite things later on
+    - [ ] parser generates entire site (with TOC), removing javascript dependencies on jquery and tocify.js
+      - this will mean quicker loading, since we won't have tocify.js generating DOM on the fly each time it loads
+      - I think this can be done with a custom extension to the Python-Markdown library. 
+      - See the [[https://github.com/aleray/mdx_outline|outline]] extension for how to wrap secitons in \<div\>s 
+      - then we need a part to store each header/subheader
+      - then a way to pass back the nested list of header/subheaders (see the meta extension for an example of getting this)
 
 ## Content to add
  1. Tasha's Cauldron magic items
