@@ -142,6 +142,8 @@ dmypy.json
 # Other
 .DS_Store
 /docs
+arcana/docs
+
 /old_stuff
 *.zip
 /generated_html
@@ -150,3 +152,4 @@ dmypy.json
 *.sublime-project
 *.sublime-workspace
 /arcana-check
+arcana/docs/Arcana.md

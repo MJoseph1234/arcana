@@ -7,6 +7,9 @@ This started as a simple web app like [[http://ceryliae.github.io/5edmscreen/ind
 
 ## To Do
  - [ ] README
+ - [ ] replace auto-reloader with dev server
+ - [x] replace rebuild command with publish
+   - calling it 'build' instead of 'publish' because publish sounds like it's making the HTML deploying to the world, instead of just updating the HTML
  - [x] use settings.py directories
  - [ ] enable customizing themes
  - [ ] site-specific extensions/markdown parsers
@@ -29,7 +32,9 @@ This started as a simple web app like [[http://ceryliae.github.io/5edmscreen/ind
    - [ ] monitor static files, like javascript
  - [x] separate and modularize cli commands
    - [x] core commands
-   - [ ] site-specific commands
+   - [x] site-specific commands
+ - [ ] commands need a way to fall back on argparse's help text printer if our custom run command finds an issue with the arguments.
+
 
 # arcana-check.net
 a site, built using the Arcana static site generator, to display long pages of d&d content in an easy-to-navigate format
@@ -43,6 +48,7 @@ a site, built using the Arcana static site generator, to display long pages of d
  - [x] favicon
  - [ ] adding cross-links like [[spell: acid splash]] on the magic items page links you to the acid splash spell on the spell page
  - [ ] text preview stuff
+   - I'm not sure what I meant when I wrote this
  - [x] robots .txt noindex
  - [x] index/home page
  - [ ] combine tasha's magic items with standard list
@@ -76,7 +82,7 @@ a site, built using the Arcana static site generator, to display long pages of d
 
 # Features of a Static Site generator
  - CLI commands
-   - [x] arcana new sitename
+   - arcana new site
    - arcana new page
       - makes a new page in content folder based on default content template
    - arcana new command

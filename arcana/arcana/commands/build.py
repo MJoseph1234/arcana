@@ -5,15 +5,15 @@ from arcana.management import BaseCommand
 
 class Command(BaseCommand):
 
-	command_name = 'rebuild'
-	command_help = 'Rebuild a single page or the entire site'
+	command_name = 'build'
+	command_help = 'Build a single page or the entire site'
 
 	def add_arguments(self, parser):
 
 		parser.add_argument('-p', '--page',
-			help = 'The filename of the page to rebuild.')
+			help = 'The name of the specific page to build.')
 		parser.add_argument('--all',
-			help = 'Rebuild the entire site',
+			help = 'Build the entire site',
 			action = 'store_true')
 		parser.add_argument('-s', '--static',
 			help = 'Update only static files',
@@ -22,15 +22,23 @@ class Command(BaseCommand):
 	def run(self, args):
 		settings = ProjectSettings(directory = '.')
 		if args.all:
+			print('building all pages')
 			Site(settings).build_site()
 			return
 
-		if args.page:
+		elif args.page:
 			pagename = args.page
 			gen = Site(settings)
 			for page in gen.pages:
-				if pagename in {page.file_name, page.file}:
+				if pagename in {page.name, page.file}:
+					print(f'building {page.name}')
 					gen.update_single_page(page)
 
-		if args.static:
+		elif args.static:
+			print('compiling static files')
 			Site(settings).add_static_files()
+
+		else:
+			print('no file or site specified. Doing Nothing.')
+
+

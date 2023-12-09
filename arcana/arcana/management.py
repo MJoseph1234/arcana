@@ -1,4 +1,4 @@
-# Testing command importing
+# Main CLI controls for arcana site management
 
 import pkgutil
 import sys
@@ -6,8 +6,6 @@ import sys
 from importlib import import_module
 from argparse import ArgumentParser
 from pathlib import Path
-
-#import commands
 
 def main():
 	parser = build_parser()

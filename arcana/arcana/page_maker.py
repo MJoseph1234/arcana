@@ -27,11 +27,10 @@ class MarkdownPage():
 			return(self._meta)
 
 		metadata_lines = 6
-		md_converter = markdown.Markdown(extensions=['meta'])
-
 		with open(self.md_file) as input_file:
 			head = [next(input_file) for _ in range(metadata_lines)]
 		
+		md_converter = markdown.Markdown(extensions=['meta'])
 		html = md_converter.convert(''.join(head))
 		self._meta = md_converter.Meta
 		return(self._meta)
@@ -57,6 +56,7 @@ class MarkdownPage():
 		md_converter = markdown.Markdown(extensions=['tables', 'nl2br', 'meta'])
 		return(md_converter.convert(text).splitlines(True))
 
+	@property
 	def is_draft(self):
 		draft = self.meta.get('draft', 'false')[0]
 		return(draft.lower() in {'true', 'yes', 't'})
@@ -102,6 +102,8 @@ class Site():
 		"""
 		navbar = []
 		for pg in self.pages:
+			if pg.is_draft:
+				continue
 			html_class_list = []
 			html_class_str = ''
 
@@ -123,7 +125,7 @@ class Site():
 		base = os.path.join(self.settings.layouts, 'base.html')
 		
 		for page in self.pages:
-			if page.is_draft() and not include_drafts:
+			if page.is_draft and not include_drafts:
 				continue
 			output_file = os.path.join(self.settings.public, page.name + '.html')
 
