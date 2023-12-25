@@ -6,27 +6,42 @@ Arcana takes markdown (.md) files and serves formatted webpages, which can have 
 This started as a simple web app like [[http://ceryliae.github.io/5edmscreen/index|The DM Screen]], but I wanted to add D&D spells, magic items and other D&D-related content that I care about (potion of healing rules).
 
 ## To Do
+### Required For Publishing
+ - [x] replace auto-reloader with dev server
+   - [x] page maker output html, don't make the files unless directed
+   - [ ] server uses auto-reloader code to watch for changes
  - [ ] README
- - [ ] replace auto-reloader with dev server
+
+### Unprioritized
+ - [ ] learn templating ideas/structure from jinja/mako/others
+ - [ ] enable customizing themes
+   - [ ] what do themes look like? What do they entail? Just colors, entire layouts?
+ - [ ] site-specific extensions/markdown parsers
+ - [ ] layouts should handle references to static files, like {% static styles.css %}. When publishing, this gets replaced with a path to styles.css, and when running a test server, this knows to look at the file in the static folder
+ - [ ] extend build command with controls for including/excluding drafts/future pages/expired pages
+ - [ ] MarkdownPage.title property should not reference "scroll of". We need a setting for a title prefix in the project settings
+ - [ ] add a settings.configured property that's true if we have a configured arcana site and false if we can't find an arcana toml config
+ - [ ] pandoc and other markdown processor support
+ - [ ] new project start with basic theme. option to not include basic theme files and just do directory structure
+ - [ ] server look for index.html or use some sort of default url
+
+### Done
+ - [x] a page's template should be looked up in order (page meta data, a project default in the project.toml, or finally an arcana default looking for base.html in a layouts folder)
  - [x] replace rebuild command with publish
    - calling it 'build' instead of 'publish' because publish sounds like it's making the HTML deploying to the world, instead of just updating the HTML
  - [x] use settings.py directories
- - [ ] enable customizing themes
- - [ ] site-specific extensions/markdown parsers
  - [x] markdown metadata extension to customize pages (like getting About page right aligned)
- - [ ] refactor the templater code so it uses settings
- 	- [ ] can pull files from {% static block %} using settings.static
+ - [x] refactor the templater code so it uses settings
  - [x] refactor SiteGenerator so that it's more like a class representing Site, with a generate function. 
- - [ ] autoreloader to automatically update HTML files if markdown files are updated. 
-   - [x] monitor for changes in existing md files
-   - [ ] monitor for added or removed markdown files
-   - [ ] monitor static files, like javascript
  - [x] separate and modularize cli commands
    - [x] core commands
    - [x] site-specific commands
  - [x] commands need a way to fall back on argparse's help text printer if our custom run command finds an issue with the arguments.
- - [ ] extend build command with controls for including/excluding drafts/future pages/expired pages
-
+ - [x] autoreloader to automatically update HTML files if markdown files are updated. 
+   - [x] monitor for changes in existing md files
+   - [x] monitor for added or removed markdown files
+   - [x] monitor static files, like javascript
+   - This is all handled by replacing the autoreloader with the dev server. Pages and static files are rendered on the fly, so users will need to refresh their browser to see updated content.
 
 # arcana-check.net
 a site, built using the Arcana static site generator, to display long pages of d&d content in an easy-to-navigate format
@@ -119,3 +134,9 @@ arcana-check/
 ├── static/
 ├── themes/
 └── hugo.toml
+
+go to parent directory
+pyenv set local python to at least 3.11
+python -m venv .env
+source .env/bin/activate
+pip install (whereever your arcana is)

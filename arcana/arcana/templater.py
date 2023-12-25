@@ -1,65 +1,65 @@
 """
-Basic templating system allows {{ content }} or {% block %}
+Basic templating system allows {{ variable }} or {% block %}
 
-{{ content }} expects a variable to be passed in
+{{ variable }} expects a variable to be passed in
 {% block %} expects to find a file named 'block' of which to pull in the contents
 """
 
-def fill_template(new_page, template_page, **kwargs):
-	with open(template_page, 'r') as template, open(new_page, 'w') as new:
-		for count, text in enumerate(template):
-			if "{{" in text:
-				handle_statement(text, new, **kwargs)
-				continue
-			if "{%" in text:
-				handle_block(text, new, **kwargs)
-				continue
-			new.write(text)
+from pathlib import Path
 
-def handle_statement(text, new, **kwargs):
-	pre, temp = text.split("{{")
-	variable, post = temp.split("}}")
-	variable = variable.strip()
+from arcana.settings import settings
 
-	indent = pre.count('\t') * '\t'
-	if kwargs.get('indent'):
-		indent += kwargs['indent']
+class Layout():
+	def __init__(self, base, context):
+		self.indent = 0
+		self.base = base
+		self.context = context
 
-	var = None
-	if kwargs.get(variable) is not None:
-		if isinstance(kwargs[variable], str):
-			var = kwargs[variable]
-		elif isinstance(kwargs[variable], list):
-			var = f'{indent}'.join(kwargs[variable])
-	
-	if not new:
-		if var is not None:
-			return(pre + var + post)
+	# def get_layout_dir(self):
+	# 	return(Path('.').joinpath('layouts'))
+
+	def render(self):
+		with open(self.base, 'r') as base:
+			for line, text in enumerate(base):
+				if "{{" in text:
+					yield(self.handle_variable(text))
+				elif "{%" in text:
+					yield(self.handle_block(text))
+				else:
+					yield(text)
+
+	def handle_variable(self, text):
+		pre, temp = text.split("{{")
+		variable, post = temp.split("}}")
+		variable = variable.strip()
+
+		self.indent += pre.count('\t')
+
+		if self.context.get(variable) is not None:
+			if isinstance(self.context[variable], str):
+				var = self.context[variable]
+			elif isinstance(self.context[variable], list):
+				tmp = "\t" * self.indent
+				var = tmp.join(self.context[variable])
 		else:
-			return(pre + post)
-	else:
-		if var is not None:
-			new.write(pre + var + post)
-		else:
-			new.write(pre + post)
+			raise KeyError(f'Template variable "{variable}" not found in template context')
+		
+		self.indent -= pre.count('\t')
 
-def handle_block(text, new, **kwargs):
-	"""Right now, blocks won't be able to have their own nested block
-	"""
-	pre, temp = text.split("{%")
-	variable, post = temp.split("%}")
-	variable = variable.strip()
+		return(pre + var + post)
 
-	indent = pre.count('\t') * '\t'
-	if kwargs.get('indent'):
-		indent += kwargs['indent']
+	def handle_block(self, text):
+		pre, temp = text.split("{%")
+		variable, post = temp.split("%}")
+		variable = variable.strip()
 
-	with open('layouts/' + variable + '.html', 'r') as block:
-		for count, text in enumerate(block):
+		layout = Path(settings.layouts).joinpath(variable + '.html')
 
-			if "{{" in text:
-				handle_statement(text, new, indent = indent, **kwargs)
-				continue
-			
-			new.write(f'{indent}{text}')
-		new.write(post)
+		self.indent += pre.count('\t')
+
+		template = Layout(layout, self.context)
+		template.indent += self.indent
+
+		self.indent -= pre.count('\t')
+		
+		return(pre + ''.join([text for text in template.render()]) + post)

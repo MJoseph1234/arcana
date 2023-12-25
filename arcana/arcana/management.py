@@ -1,4 +1,14 @@
-# Main CLI controls for arcana site management
+"""
+Main CLI entry point for arcana site management
+
+This is what's called when running 'arcana' from the command line
+
+Arcana's main commands (new, serve, publish, etc.) are installed with
+arcana. Custom or site-specific commands can be made in a project's
+'commands' directory. When run, this finds all the main arcana commands
+and looks for any site commands. It combines them all to build a parser 
+to handle the CLI arguments
+"""
 
 import pkgutil
 import sys
@@ -16,6 +26,8 @@ def main():
 
 def get_arcana_path():
 	"""
+	Get the path to wherever arcana is installed.
+
 	if __path__ is not set, this is likely being used
 	as the source code instead of as a pip module, so use
 	the file path of this management script as the directory
@@ -35,9 +47,12 @@ def get_project_path():
 	for now we'll assume Arcana is being run from the project 
 	directory. in the future we may want to allow arcana to be 
 	run with a specific directory given as an argument
+
+	we also update sys.path with this directory so 
+	importlib.import_module can correctly find and import commands
 	"""
 	sys.path.append('.')
-	# sys.path.append(Path.cwd().joinpath('commands'))
+	# sys.path.append(Path.cwd())
 	# for x in sys.path:
 	# 	print(x)
 	

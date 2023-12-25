@@ -6,8 +6,9 @@ Any unspecified project settings are set to an arcana default
 here
 """
 
-from pathlib import Path
 import tomllib
+
+from pathlib import Path
 
 # Find the toml file
 # read the toml file into a settings global
@@ -74,9 +75,4 @@ class ProjectSettings():
 		if getattr(self, 'title_suffix', None) is None:
 			self.title_suffix = ' - ' + self.site_name.replace('-', ' ').title()
 
-
-
-
-
-
-
+settings = ProjectSettings('.')

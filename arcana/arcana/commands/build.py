@@ -1,12 +1,11 @@
 
-from arcana.settings import ProjectSettings
-from arcana.page_maker import Site
+from arcana.core import Site
 from arcana.management import BaseCommand
 
 class Command(BaseCommand):
 
 	command_name = 'build'
-	command_help = 'Build a single page or the entire site'
+	command_help = 'Build a single html file or the entire site'
 
 	def add_arguments(self, parser):
 
@@ -18,25 +17,28 @@ class Command(BaseCommand):
 		parser.add_argument('-s', '--static',
 			help = 'Update only static files',
 			action = 'store_true')
+		parser.add_argument('-d', '--include-drafts',
+			help = 'Include draft pages',
+			action = 'store_true')
 
 	def run(self, args):
-		settings = ProjectSettings(directory = '.')
 		if args.all:
 			print('building all pages')
-			Site(settings).build_site()
+			Site(args.include_drafts).build_site()
 			return
 
 		elif args.page:
 			pagename = args.page
-			gen = Site(settings)
+			gen = Site(args.include_drafts)
 			for page in gen.pages:
 				if pagename in {page.name, page.file}:
 					print(f'building {page.name}')
-					gen.update_single_page(page)
+					output_file = gen.get_public_filename_for_page(page)
+					gen.build_page(page)
 
 		elif args.static:
 			print('compiling static files')
-			Site(settings).add_static_files()
+			Site().add_static_files()
 
 		else:
 			print('no file or site specified. Doing Nothing.')
