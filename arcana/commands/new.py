@@ -9,18 +9,44 @@ class Command(BaseCommand):
 
 	def add_arguments(self, parser):
 
-		parser.add_argument('path',
+		subparser = parser.add_subparsers(title = 'entity',
+			description = 'New thing to create',
+			required = True,
+			dest = 'entity')
+
+		# New Project command for starting a brand new arcana project
+		new_project = subparser.add_parser(
+			name = 'project',
+			help = 'start a new Arcana project')
+
+		new_project.add_argument('path',
 			help = 'relative path to new directory')
 
-	def run(self, args):
+		# New Post command for creating a new file for the current
+		# arcana project
+		new_post = subparser.add_parser(
+			name = 'post',
+			help = 'create a new post or document in the project content directory')
+		new_post.add_argument('name',
+			help = 'Name or page title for the new post')
 
+		new_command = subparser.add_parser(
+			name = 'command',
+			help = 'create a new arcana CLI command for your project')
+
+		# parser.add_argument('path',
+		# 	help = 'relative path to new directory')
+
+	def run(self, args):
+		raise NotImplementedError
+
+	def new_project(self, args):
 		path = Path(args.path)
 		if path.is_dir():
 			print('that path already exists, exiting and doing nothing')
 			return
 
 		path.mkdir()
-
 		path.joinpath('content').mkdir()
 		path.joinpath('layouts').mkdir()
 		path.joinpath('public').mkdir()
@@ -32,6 +58,23 @@ class Command(BaseCommand):
 			f.write('# site details\n')
 			f.write(f'site_name = \"{path.name}\"\n')
 
+	def new_post(self, args):
+		"""
+		If we're making a new post, we better be able
+		to find the settings file
+		"""
+		from arcana.settings import settings
+
+		settings.content
+
+new_project_config = '''
+# Site Details
+site_name = \"{path.name}\"
+language = \"en-us\"
+
+# Directories
+root = "."
+'''
 
 new_command = '''
 from arcana.management import BaseCommand
