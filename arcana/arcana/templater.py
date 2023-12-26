@@ -6,6 +6,7 @@ Basic templating system allows {{ variable }} or {% block %}
 """
 
 from pathlib import Path
+from io import StringIO
 
 from arcana.settings import settings
 
@@ -19,14 +20,20 @@ class Layout():
 	# 	return(Path('.').joinpath('layouts'))
 
 	def render(self):
-		with open(self.base, 'r') as base:
-			for line, text in enumerate(base):
-				if "{{" in text:
-					yield(self.handle_variable(text))
-				elif "{%" in text:
-					yield(self.handle_block(text))
-				else:
-					yield(text)
+		if isinstance(self.base, Path):
+			base = open(self.base, 'r')
+		elif isinstance(self.base, str):
+			base = StringIO(self.base)
+
+		for line, text in enumerate(base):
+			if "{{" in text:
+				yield(self.handle_variable(text))
+			elif "{%" in text:
+				yield(self.handle_block(text))
+			else:
+				yield(text)
+
+		base.close()
 
 	def handle_variable(self, text):
 		pre, temp = text.split("{{")

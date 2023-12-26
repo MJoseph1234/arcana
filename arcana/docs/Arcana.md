@@ -9,11 +9,11 @@ This started as a simple web app like [[http://ceryliae.github.io/5edmscreen/ind
 ### Required For Publishing
  - [x] replace auto-reloader with dev server
    - [x] page maker output html, don't make the files unless directed
-   - [ ] server uses auto-reloader code to watch for changes
  - [ ] README
 
 ### Unprioritized
  - [ ] learn templating ideas/structure from jinja/mako/others
+ - [ ] fallback template if there's no base.html?
  - [ ] enable customizing themes
    - [ ] what do themes look like? What do they entail? Just colors, entire layouts?
  - [ ] site-specific extensions/markdown parsers
@@ -139,4 +139,4 @@ go to parent directory
 pyenv set local python to at least 3.11
 python -m venv .env
 source .env/bin/activate
-pip install (whereever your arcana is)
+pip install (where ever your arcana is)

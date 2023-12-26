@@ -52,22 +52,28 @@ def build_request_handler(args):
 
 		def resolve_path_to_file(self):
 			site = Site(include_drafts = args.include_drafts)
-			url = [piece for piece in self.path.split('/') if piece != '']
-			if len(url) == 1:
-				rq = url[0]
-				dr = 'content'
-			elif len(url) == 2:
-				dr, rq = url[0], url[1]
 
-			(mime_type, encoding) = guess_type(rq)
-			if rq.endswith('.html'):
-				rq = rq.replace('.html', '')
+			(mime_type, encoding) = guess_type(self.path)
 
-			if dr == 'static':
+			segments = [piece for piece in self.path.split('/') if piece != '']
+			if len(segments) == 0:
+				# TODO handle default page/index.html
+				pass
+			elif len(segments) == 1:
+				resource = url[0]
+				path = 'content'
+			else:
+				resource = url[-1]
+				path = '/'.join(segments[0:-1])
+
+			if resource.endswith('.html'):
+				resource = resource.replace('.html', '')
+
+			if path == 'static/':
 				self.send_response(200)
 				self.send_header('Content-type', mime_type)
 				self.end_headers()
-				with open(Path('static/').joinpath(rq), 'r') as static:
+				with open(Path('static/').joinpath(resource), 'r') as static:
 					for line in static:
 						self.wfile.write(bytes(line, 'utf-8'))
 				return

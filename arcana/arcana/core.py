@@ -165,8 +165,10 @@ class Site():
 			return(Path(settings.layouts).joinpath(page.layout))
 		elif getattr(settings, 'default_layout', None) is not None:
 			return(Path(settings.layouts).joinpath(settings.default_layout))
-		else:
+		elif Path(settings.layouts).joinpath('base.html').exists():
 			return(Path(settings.layouts).joinpath('base.html'))
+		else:
+			return("{{content}}")
 
 	def get_public_filename_for_page(self, page):
 		return(Path(settings.public).joinpath(page.slug + '.html'))
