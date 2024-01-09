@@ -86,7 +86,7 @@ class Site():
 		if ext not in {'.txt', '.md'}:
 			return(True)
 
-		if MarkdownPage(file, settings.content).meta.get('exclude') == ['true']:
+		if MarkdownPage(file, settings['dirs']['content']).meta.get('exclude') == ['true']:
 			return(True)
 
 		return(False)
@@ -100,11 +100,11 @@ class Site():
 
 	def refresh_page_list(self):
 		self._pages = []
-		for file in os.listdir(settings.content):
+		for file in os.listdir(settings['dirs']['content']):
 			if self.exclude_file(file):
 				continue
 
-			self._pages.append(MarkdownPage(file, settings.content))
+			self._pages.append(MarkdownPage(file, settings['dirs']['content']))
 
 	def build_navbar_for_page(self, page):
 		"""
@@ -157,28 +157,27 @@ class Site():
 		self.add_static_files()
 
 	def add_static_files(self):
-		for file in os.listdir(settings.static):
-			shutil.copy(os.path.join(settings.static, file), settings.public)
+		for file in os.listdir(settings['dirs']['static']):
+			shutil.copy(os.path.join(settings['dirs']['static'], file), settings['dirs']['public'])
 
 	def get_layout_for_page(self, page):
+		layouts = Path(settings['dirs']['layouts'])
+
 		if page.layout is not None:
-			return(Path(settings.layouts).joinpath(page.layout))
-		elif getattr(settings, 'default_layout', None) is not None:
-			return(Path(settings.layouts).joinpath(settings.default_layout))
-		elif Path(settings.layouts).joinpath('base.html').exists():
-			return(Path(settings.layouts).joinpath('base.html'))
+			return(layouts.joinpath(page.layout))
+		elif layouts.joinpath(settings['default_layout']).exists():
+			return(layouts.joinpath(settings['default_layout']))
 		else:
 			return("{{content}}")
 
 	def get_public_filename_for_page(self, page):
-		return(Path(settings.public).joinpath(page.slug + '.html'))
+		return(Path(settings['dirs']['public']).joinpath(page.slug + '.html'))
 
 	def build_page(self, page, target = None):
-		"""compile the HTML for given page
+		"""Generate the HTML for a given page
 
-		Designed for fixing a typo in the content of one page, so
-		if file names or metadata on other pages have changed,
-		the navbar may be incorrect
+		If iarget is a file descriptor, write the html to target. 
+		Otherwise, return the html to the caller
 		"""
 		base = self.get_layout_for_page(page)
 

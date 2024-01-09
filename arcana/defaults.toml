@@ -1,0 +1,51 @@
+# Defaults
+language = "en-us"
+new_post_as_draft = true
+dev_addr = "localhost:8080"
+default_layout = "base.html"
+
+[dirs]
+commands = "commands"
+content = "content"
+layouts = "layouts"
+public = "public"
+root = "."
+static = "static"
+
+[new]
+config_file_template = """ \
+# Site Details
+site_name = "$site_name"
+language = "$site_language" \
+"""
+
+post_template = """\
+---
+Title: $title
+Draft: $draft
+---
+
+<!--- Add your content here --> \
+"""
+
+command_template = '''from arcana.management import BaseCommand
+
+class Command(BaseCommand):
+	"""Set a name and brief description of your command here
+	"""
+
+	command_name = 'myNewCommand'
+	command_help = 'This command does some cool stuff'
+
+	def add_arguments(self, parser):
+		"""Add arguments for your new command here
+		
+		parser.add_argument behaves the same as in the argparse
+		library
+		"""
+
+		parser.add_argument('arg1',
+			help = 'the first argument to your command')
+
+	def run(self, args):
+		"""Add the main logic of this command here"""'''

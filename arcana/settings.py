@@ -4,17 +4,50 @@ project directory.
 
 Any unspecified project settings are set to an arcana default
 here
+
+Load settings from arcana defaults
+check for and load settings from site defaults
+compile settings (but still allow access to what settings came from where)
 """
 
 import tomllib
 
 from pathlib import Path
+from collections import ChainMap
+
+import arcana
 
 # Find the toml file
 # read the toml file into a settings global
 # add defaults into the settings global
 
-def find_config_file(directory):
+def read_toml(toml_file):
+	with open(toml_file, 'rb') as toml:
+		data = tomllib.load(toml)
+
+	return(data)
+
+def load_arcana_config(directory = None):
+	"""Get the absolute defaults for all arcana
+	These can be overridden for a project by that project's
+	project.toml file
+	"""
+
+	if directory:
+		return(read_toml(Path(directory).joinpath('defaults.toml')))
+	else:
+		try:
+			arcana_path = Path(arcana.__path__[0])
+		except NameError:
+			arcana_path = Path(__file__).parent
+
+		return(read_toml(arcana_path.joinpath('defaults.toml')))
+
+def load_project_config(directory = '.'):
+	file = find_project_config_file(directory)
+	return(read_toml(file))
+
+def find_project_config_file(directory):
 	"""
 	directory/*.toml
 	directory/*.config
@@ -29,16 +62,14 @@ def find_config_file(directory):
 			if file.suffix == suffix:
 				return file
 
-def read_toml(toml_file):
-	with open(toml_file, 'rb') as toml:
-		data = tomllib.load(toml)
+def compile_config():
+	return(ChainMap(load_project_config(), load_arcana_config(),))
 
-	return(data)
 
 class ProjectSettings():
 	def __init__(self, directory = None, toml_file = None, **kwargs):
 		if directory and not toml_file:
-			toml_file = find_config_file(directory)
+			toml_file = find_project_config_file(directory)
 			self.root = directory
 
 		if toml_file:
@@ -72,7 +103,7 @@ class ProjectSettings():
 			else:
 				self.site_name = Path.cwd().name
 
-		if getattr(self, 'title_suffix', None) is None:
-			self.title_suffix = ' - ' + self.site_name.replace('-', ' ').title()
+		# if getattr(self, 'title_suffix', None) is None:
+		# 	self.title_suffix = ' - ' + self.site_name.replace('-', ' ').title()
 
-settings = ProjectSettings('.')
+settings = compile_config()

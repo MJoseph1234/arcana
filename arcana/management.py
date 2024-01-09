@@ -17,6 +17,8 @@ from importlib import import_module
 from argparse import ArgumentParser
 from pathlib import Path
 
+import arcana
+
 def main():
 	parser = build_parser()
 
@@ -28,13 +30,13 @@ def get_arcana_path():
 	"""
 	Get the path to wherever arcana is installed.
 
-	if __path__ is not set, this is likely being used
+	if __path__ is not set, this might be being used
 	as the source code instead of as a pip module, so use
 	the file path of this management script as the directory
 	for finding the core management commands
 	"""
 	try:
-		arcana_path = Path(__path__[0])
+		arcana_path = Path(arcana.__path__[0])
 	except NameError:
 		arcana_path = Path(__file__).parent
 	return(arcana_path)

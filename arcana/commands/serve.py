@@ -23,20 +23,18 @@ class Command(BaseCommand):
 		help = 'Include draft pages',
 		action = 'store_true')
 
-		parser.add_argument('-p', '--port',
-		help = 'Port number to use',
-		default = '8080',
-		type = int)
+		parser.add_argument('-a', '--address',
+			help = 'IP and port number for the development server. Written as an IP:PortNumber pair',
+			default = '127.0.0.1:8080')
 
 	def run(self, args):
 		"""Add the main logic of this command here"""
 
-		host_name = 'localhost'
-		port = args.port
+		addr, port = args.address.split(':')
 		request_handler = build_request_handler(args)
-		webserver = HTTPServer((host_name, port), request_handler)
+		webserver = HTTPServer((addr, int(port)), request_handler)
 		
-		print(f'Server started http://{host_name}:{port}')
+		print(f'Server started http://{addr}:{port}')
 		try:
 			webserver.serve_forever()
 		except KeyboardInterrupt:
@@ -60,20 +58,20 @@ def build_request_handler(args):
 				# TODO handle default page/index.html
 				pass
 			elif len(segments) == 1:
-				resource = url[0]
+				resource = segments[0]
 				path = 'content'
 			else:
-				resource = url[-1]
+				resource = segments[-1]
 				path = '/'.join(segments[0:-1])
 
 			if resource.endswith('.html'):
 				resource = resource.replace('.html', '')
 
-			if path == 'static/':
+			if path == 'static':
 				self.send_response(200)
 				self.send_header('Content-type', mime_type)
 				self.end_headers()
-				with open(Path('static/').joinpath(resource), 'r') as static:
+				with open(Path('static').joinpath(resource), 'r') as static:
 					for line in static:
 						self.wfile.write(bytes(line, 'utf-8'))
 				return
@@ -82,7 +80,7 @@ def build_request_handler(args):
 			self.send_header('Content-type', mime_type)
 			self.end_headers()
 			for page in site.pages:
-				if rq == page.slug:
+				if resource == page.slug:
 					for line in site.build_page(page):
 						self.wfile.write(bytes(line, 'utf-8'))
 

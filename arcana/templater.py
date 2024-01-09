@@ -60,7 +60,7 @@ class Layout():
 		variable, post = temp.split("%}")
 		variable = variable.strip()
 
-		layout = Path(settings.layouts).joinpath(variable + '.html')
+		layout = Path(settings['dirs']['layouts']).joinpath(variable + '.html')
 
 		self.indent += pre.count('\t')
 
