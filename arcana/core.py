@@ -182,7 +182,7 @@ class Site():
 		base = self.get_layout_for_page(page)
 
 		context = {
-			'page_title': f'{page.title}{settings.title_suffix}',
+			'page_title': f'{page.title}{settings["title_suffix"]}',
 			'navbar_links': self.build_navbar_for_page(page),
 			'content': page.content_as_html
 		}
