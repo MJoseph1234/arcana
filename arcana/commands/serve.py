@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from mimetypes import guess_type
 
 from arcana.management import BaseCommand
+from arcana.settings import settings
 from arcana.core import Site
 
 
@@ -55,14 +56,17 @@ def build_request_handler(args):
 
 			segments = [piece for piece in self.path.split('/') if piece != '']
 			if len(segments) == 0:
-				# TODO handle default page/index.html
-				pass
+				resource = settings['home']
+				path = 'content'
 			elif len(segments) == 1:
 				resource = segments[0]
 				path = 'content'
 			else:
 				resource = segments[-1]
 				path = '/'.join(segments[0:-1])
+
+			print(resource)
+			print(path)
 
 			if resource.endswith('.html'):
 				resource = resource.replace('.html', '')

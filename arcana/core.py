@@ -3,6 +3,7 @@ import os
 import shutil
 
 from pathlib import Path
+from string import Template, capwords
 
 from arcana.settings import settings
 from arcana.templater import Layout
@@ -41,14 +42,16 @@ class MarkdownPage():
 		if self.meta.get('title'):
 			return(self.meta['title'][0])
 		else:
-			return(f'Scroll of {capitalize_words(self.name)}')
+			title_str = Template(settings['page_title_template'])
+			return(title_str.substitute(
+				title = self.name))
 
 	@property
 	def link_text(self):
 		if self.meta.get('linktext'):
 			return(self.meta['linktext'][0])
 		else:
-			return(f'{capitalize_words(self.name)}')
+			return(f'{capwords(self.name)}')
 
 	@property
 	def content_as_html(self):
@@ -193,6 +196,3 @@ class Site():
 		with open(target, 'w') as out:
 			for text in Layout(base, context).render():
 				out.write(text)
-
-def capitalize_words(string):
-	return(' '.join(s.capitalize() for s in string.split()))

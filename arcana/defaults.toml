@@ -3,6 +3,8 @@ language = "en-us"
 new_post_as_draft = true
 dev_addr = "localhost:8080"
 default_layout = "base.html"
+home = "about"
+page_title_template = "$title"
 
 [dirs]
 commands = "commands"
