@@ -8,12 +8,12 @@ from string import Template, capwords
 from arcana.settings import settings
 from arcana.templater import Layout
 
-class MarkdownPage():
-	def __init__(self, file, directory):
+class Page():
+	def __init__(self, file, directory = ''):
 		self.file = file
 		self.name, self.ext = os.path.splitext(file)
 		self.directory = directory
-		self.md_file = os.path.join(directory, file)
+		self.md_file = Path(settings['dirs']['content']).joinpath(directory, file)
 		self._meta = {}
 
 	@property
@@ -81,15 +81,15 @@ class MarkdownPage():
 
 class Site():
 	def __init__(self, include_drafts = False):
-		self.refresh_page_list()
+		#self.refresh_page_list()
 		self.include_drafts = include_drafts
 
-	def exclude_file(self, file):
+	def exclude_file(self, file, subdir = ''):
 		file_name, ext = os.path.splitext(file)
 		if ext not in {'.txt', '.md'}:
 			return(True)
 
-		if MarkdownPage(file, settings['dirs']['content']).meta.get('exclude') == ['true']:
+		if Page(file, subdir).meta.get('exclude') == ['true']:
 			return(True)
 
 		return(False)
@@ -107,9 +107,72 @@ class Site():
 			if self.exclude_file(file):
 				continue
 
-			self._pages.append(MarkdownPage(file, settings['dirs']['content']))
+			self._pages.append(Page(file))
+
+	def build_site(self):
+		# Clobber the public path
+
+		with os.scandir(settings['dirs']['content']) as content:
+			for entry in content:
+				if entry.is_dir():
+					self.build_site_subdir(entry)
+				elif entry.is_file() and not self.exclude_file(entry.name):
+					page = Page(entry.name)
+					if page.is_draft and not self.include_drafts:
+						continue
+					output_file = self.get_public_filename_for_page(page)
+					self.build_page(page, output_file)
+
+		self.add_static_files()
+
+	def build_site_subdir(self, sub_dir):
+		# in the public folder, make a subdirectory with name from path
+		
+		os.mkdir(Path(settings['dirs']['public']).joinpath(sub_dir.name))
+
+		with os.scandir(sub_dir) as subcontent:
+			for entry in subcontent:
+				if entry.is_dir():
+					pass
+					#Only allowing one level of directory depth at the moment
+				elif entry.is_file() and not self.exclude_file(entry.name, sub_dir.name):
+					page = Page(entry.name, sub_dir.name)
+					if page.is_draft and not self.include_drafts:
+						continue
+					output_file = self.get_public_filename_for_page(page)
+					self.build_page(page, output_file)
 
 	def build_navbar_for_page(self, page):
+		navbar = []
+		path = Path(settings['dirs']['content']).joinpath(page.directory)
+		
+		for file in os.listdir(path):
+			if self.exclude_file(file, page.directory):
+				continue
+			if Page(file, page.directory).is_draft and not self.include_drafts:
+				continue
+
+			html_class_list = []
+			html_class_str = ''
+
+			pg = Page(file, page.directory)
+
+			if pg == page:
+				html_class_list.append('active')
+
+			if pg.meta.get('align') == ['Right']:
+				html_class_list.append('split')
+
+			if html_class_list:
+				x = ' '.join(html_class_list)
+				html_class_str = f' class="{x}"'
+
+			Path(pg.directory).joinpath(pg.slug)
+			html = f'<a href="/{Path(pg.directory).joinpath(pg.slug)}.html"{html_class_str}>{pg.link_text}</a>\n'
+			navbar.append(html)
+		return(navbar)
+
+	def old_build_navbar_for_page(self, page):
 		"""
 		The navbar is page-specific (so we can add the 'active' class),
 		but requires details of the entire site
@@ -135,7 +198,7 @@ class Site():
 			navbar.append(html)
 		return(navbar)
 
-	def build_site(self):
+	def build_site_old(self):
 		# base = os.path.join(settings.layouts, 'base.html')
 		
 		for page in self.pages:
@@ -174,7 +237,7 @@ class Site():
 			return("{{content}}")
 
 	def get_public_filename_for_page(self, page):
-		return(Path(settings['dirs']['public']).joinpath(page.slug + '.html'))
+		return(Path(settings['dirs']['public']).joinpath(page.directory, page.slug + '.html'))
 
 	def build_page(self, page, target = None):
 		"""Generate the HTML for a given page

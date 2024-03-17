@@ -1,10 +1,11 @@
+import os
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from mimetypes import guess_type
 
 from arcana.management import BaseCommand
 from arcana.settings import settings
-from arcana.core import Site
+from arcana.core import Site, Page
 
 
 class Command(BaseCommand):
@@ -50,43 +51,48 @@ def build_request_handler(args):
 			self.resolve_path_to_file()
 
 		def resolve_path_to_file(self):
-			site = Site(include_drafts = args.include_drafts)
+			# site = Site(include_drafts = args.include_drafts)
 
-			(mime_type, encoding) = guess_type(self.path)
+			(mime_type, encoding) = guess_type(self.path, strict = False)
 
+			if mime_type in {'application/javascript', 'text/css'}:
+				return(self.handle_static(mime_type))
+			
 			segments = [piece for piece in self.path.split('/') if piece != '']
+			path = ''
 			if len(segments) == 0:
 				resource = settings['home']
-				path = 'content'
 			elif len(segments) == 1:
 				resource = segments[0]
-				path = 'content'
 			else:
 				resource = segments[-1]
-				path = '/'.join(segments[0:-1])
-
-			print(resource)
-			print(path)
+				path = Path('.').joinpath(*segments[0:-1])
 
 			if resource.endswith('.html'):
 				resource = resource.replace('.html', '')
 
-			if path == 'static':
-				self.send_response(200)
-				self.send_header('Content-type', mime_type)
-				self.end_headers()
-				with open(Path('static').joinpath(resource), 'r') as static:
-					for line in static:
-						self.wfile.write(bytes(line, 'utf-8'))
-				return
-
 			self.send_response(200)
 			self.send_header('Content-type', mime_type)
 			self.end_headers()
-			for page in site.pages:
-				if resource == page.slug:
-					for line in site.build_page(page):
+
+			for file in os.listdir(Path(settings['dirs']['content']).joinpath(path)):
+				if file == resource + '.md': # Otherwise, we should also check Page.slug for a match
+					page = Page(file, path)
+					for line in Site().build_page(page):
 						self.wfile.write(bytes(line, 'utf-8'))
+
+		def handle_static(self, mime_type):
+
+			segments = [piece for piece in self.path.split('/') if piece != '']
+			resource = segments[-1]
+
+			with open(Path(settings['dirs']['static']).joinpath(resource), 'r') as static:
+				self.send_response(200)
+				self.send_header('Content-type', mime_type)
+				self.end_headers()
+				for line in static:
+					self.wfile.write(bytes(line, 'utf-8'))
+			return
 
 	return ArcanaRequestHandler
 
